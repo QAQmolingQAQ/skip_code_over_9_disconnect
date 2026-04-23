@@ -1,0 +1,61 @@
+"Games"
+{
+    "csgo"
+    {
+        "Keys"
+        {
+            "SkipCodeDisconnect_Patch"
+            {
+                "windows"   "EB 0A 90 90 90 90 90 90 90 90 90 90"
+            }
+        }
+        
+        "Offsets"
+        {
+            "SkipCodeDisconnect_Patch"
+            {
+                "windows"   "0x19B"
+            }
+        }
+
+        "Addresses"
+        {
+            "AuthFailureHandler"
+            {
+                "windows"
+                {
+                    "signature" "AuthFailureHandler"
+                }
+            }
+        }
+
+        "Signatures"
+        {
+            /*
+             * Steam 认证失败处理函数 (sub_101BEDD0)
+             * 
+             * 函数特征码取自：
+             * .text:101BEDD0    push    ebp
+             * .text:101BEDD1    mov     ebp, esp
+             * .text:101BEDD3    sub     esp, 10Ch
+             * .text:101BEDD9    push    ebx
+             * .text:101BEDDA    push    esi
+             * .text:101BEDDB    push    edi
+             * 
+             * 偏移 0x19B 处是 switch 的 default 分支：
+             * .text:101BEF6B    mov     eax, [edi]              ; 8B 07
+             * .text:101BEF6D    mov     ecx, edi               ; 8B CF
+             * .text:101BEF6F    push    offset aClientDroppedB   ; "Client dropped by server"
+             * .text:101BEF74    call    dword ptr [eax+3Ch]    ; Disconnect()
+             * 
+             * 补丁将其改为 jmp 跳过 Disconnect 调用：
+             * EB 0A 90 90 90 90 90 90 90 90 90 90
+             */
+            "AuthFailureHandler"
+            {
+                "library"   "engine"
+                "windows"   "\x55\x8B\xEC\x81\xEC\x0C\x01\x00\x00\x53\x56\x57"
+            }
+        }
+    }
+}
